@@ -1274,6 +1274,19 @@ class DatabaseEloquentModelTest extends PHPUnit_Framework_TestCase
         $this->assertNull($array['timestampAttribute']);
     }
 
+    public function testOriginalIsNumericallyEquivalent()
+    {
+        $model = new EloquentModelCastingStub;
+        $model->setRawAttributes(["floatAttribute"=>'4.00'], true);
+        $model->floatAttribute = '4.0';
+
+        $closure = Closure::bind(function(){
+            return $this->originalIsNumericallyEquivalent('floatAttribute');
+        }, $model, $model);
+
+        $this->assertEquals(true, $closure());
+    }
+
     protected function addMockConnection($model)
     {
         $model->setConnectionResolver($resolver = m::mock('Illuminate\Database\ConnectionResolverInterface'));
