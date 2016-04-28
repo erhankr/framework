@@ -25,6 +25,24 @@ class MySqlGrammar extends Grammar
         'lock',
     ];
 
+    protected function compileColumns(Builder $query, $columns)
+    {
+        // If the query is actually performing an aggregating select, we will let that
+        // compiler handle the building of the select clauses, as it will need some
+        // more syntax that is best handled by that function to keep things neat.
+        if (! is_null($query->aggregate)) {
+            return;
+        }
+
+        $select = $query->distinct ? 'select distinct ' : 'select ';
+
+        if ($query->calc_found_rows) {
+            $select .= 'SQL_CALC_FOUND_ROWS ';
+        }
+
+        return $select.$this->columnize($columns);
+    }
+
     /**
      * Compile a select query into SQL.
      *
