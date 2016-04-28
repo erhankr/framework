@@ -79,6 +79,13 @@ class Builder
     public $distinct = false;
 
     /**
+     * Adds SQL_CALC_FOUND_ROWS to select
+     *
+     * @var mixed
+     */
+    public $calc_found_rows = false;
+
+    /**
      * The table which the query is targeting.
      *
      * @var string
@@ -305,6 +312,29 @@ class Builder
         $this->distinct = true;
 
         return $this;
+    }
+
+    /**
+     * Calculate found rows count without limit
+     * After calculate found rows can get using found_rows()
+     *
+     * @return $this
+     */
+    public function calcFoundRows()
+    {
+        $this->calc_found_rows = true;
+
+        return $this;
+    }
+
+    /**
+     * Returns calculated found rows by using SQL_CALC_FOUND_ROWS
+     *
+     * @return int
+     */
+    public function foundRows()
+    {
+        return current($this->connection->select('select FOUND_ROWS() as rows'))->rows;
     }
 
     /**
